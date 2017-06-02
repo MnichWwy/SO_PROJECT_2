@@ -20,7 +20,7 @@ void *reader();
 
 void consoleOutput();
 
-void init(int readersCounter,int writersCounter);
+void initThreads(int readersCounter,int writersCounter);
 
 void waitForEntryReader();
 
@@ -138,15 +138,18 @@ while ( 1 )
 }
 
 void waitForEntryReader(){
-
+int i;
+for (i=0;i<30;i++){};
 }
 
 void waitForEntryWriter(){
-
+int i;
+for (i=0;i<10;i++){};
 }
 
 void inReadingRoom(){
-
+int i;
+for (i=0;i<100;i++){};
 }
 
 void consoleOutput(){
