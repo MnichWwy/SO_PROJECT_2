@@ -68,8 +68,8 @@ pthread_t idWriters[writersCounter];
     pthread_mutex_init(&mutexReaders,NULL);
     pthread_mutex_init(&mutexReadersRoom,NULL);
     pthread_cond_init(&turn, NULL);	
-    pthread_mutex_unlock(&mutexReaders);
-    pthread_mutex_unlock(&mutexReadersRoom);
+    //pthread_mutex_unlock(&mutexReaders);
+    //pthread_mutex_unlock(&mutexReadersRoom);
 
 	int i;
 
@@ -101,7 +101,9 @@ pthread_t idWriters[writersCounter];
 		errno = pthread_join(idWriters[i], NULL);
 		test_errno("Blad konczenia watkow pisarzy");
 	}
-pthread_cond_destroy(&turn);	
+pthread_cond_destroy(&turn);
+pthread_mutex_destroy(&mutexReadersRoom);
+pthread_mutex_destroy(&mutexReaders);	
 
 }
 
@@ -112,9 +114,6 @@ while ( 1 )
   {
 	waitForEntryWriter();
 	pthread_mutex_lock(&mutexReadersRoom);
-
-	writersQueque++;
-	consoleOutput();
 
 	while (inReaders || inWriters)
 	{
@@ -174,7 +173,6 @@ while ( 1 )
 
 
   }
-
 }
 
 void waitForEntryReader(){
