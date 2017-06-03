@@ -32,13 +32,9 @@ int main(int argc, char* argv[])
 {
 
 if (argc==3){
-readersQueque=strtol(argv[1], NULL, 10);
-writersQueque=strtol(argv[2], NULL, 10);
 initThreads(strtol(argv[1], NULL, 10),strtol(argv[2], NULL, 10));
 }
 else{
-readersQueque=CUSTOM_READERS;
-writersQueque=CUSTOM_WRITERS;
 initThreads(CUSTOM_READERS,CUSTOM_WRITERS);
 }
 

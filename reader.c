@@ -7,28 +7,34 @@ void *reader()
 while ( 1 )
   {
 	waitForEntryReader();
+	readersQueque++;
+	consoleOutput();
 	pthread_mutex_lock(&mutexReaders);
-	
-	while (inWriters)
+	 
+	if (inReaders==0)
 	{
-	 pthread_cond_wait(&turn,&mutexReadersRoom);
+	 pthread_mutex_lock(&mutexReadersRoom);
 	}
 	
 	readersQueque--;
 	inReaders++;
 	consoleOutput();
 
-	pthread_mutex_unlock(&mutexReadersRoom);
+	pthread_mutex_unlock(&mutexReaders);
 	inReadingRoom();
 
-	pthread_mutex_lock(&mutexReadersRoom);
+	pthread_mutex_lock(&mutexReaders);
+
 	inReaders--;
-	readersQueque++;
 	consoleOutput();
 
-	pthread_cond_broadcast(&turn);
-	pthread_mutex_unlock(&mutexReadersRoom);
+	if (inReaders==0)
+	{
+	 pthread_mutex_unlock(&mutexReadersRoom);
+	}
 
+	//pthread_cond_broadcast(&turn);
+	pthread_mutex_unlock(&mutexReaders);
 
   }
 }
