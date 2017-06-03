@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define CUSTOM_READERS 5
 #define CUSTOM_WRITERS 2
@@ -13,6 +14,8 @@
 int readersQueque=0,writersQueque=0,inReaders=0,inWriters=0;
 
 pthread_mutex_t mutexReadersRoom,mutexReaders;
+
+pthread_cond_t turn;
 
 void *writer();
 
@@ -31,25 +34,26 @@ void inReadingRoom();
 int main(int argc, char* argv[])
 {
 
-if (argc==2){ 
-initThreads(argv[0],argv[1]);
-readersQueque=argv[0];
-writersQueque=argv[1];
+if (argc==3){
+readersQueque=strtol(argv[1], NULL, 10);
+writersQueque=strtol(argv[2], NULL, 10);
+initThreads(strtol(argv[1], NULL, 10),strtol(argv[2], NULL, 10));
+}
+else{
+readersQueque=CUSTOM_READERS;
+writersQueque=CUSTOM_WRITERS;
+initThreads(CUSTOM_READERS,CUSTOM_WRITERS);
+}
+
+
+
+if (argc==3){
+initThreads(strtol(argv[1], NULL, 10),strtol(argv[2], NULL, 10));
 }
 else{
 initThreads(CUSTOM_READERS,CUSTOM_WRITERS);
-readersQueque=5;
-writersQueque=2;
 }
-
-
-
-if (argc==2){ 
-initThreads(argv[0],argv[1]);
-}
-else{
-initThreads(CUSTOM_READERS,CUSTOM_WRITERS);
-}
+printf("Koniec");
  return 0;
 
 }
@@ -58,6 +62,13 @@ void initThreads(int readersCounter,int writersCounter)
 {
 pthread_t idReaders[readersCounter];
 pthread_t idWriters[writersCounter];
+
+    pthread_mutex_init(&mutexReaders,NULL);
+    pthread_mutex_init(&mutexReadersRoom,NULL);
+    pthread_cond_init(&turn, NULL);	
+    pthread_mutex_unlock(&mutexReaders);
+    pthread_mutex_unlock(&mutexReadersRoom);
+
 	int i;
 
 	for (i=0; i < readersCounter; i++) {
@@ -69,6 +80,7 @@ pthread_t idWriters[writersCounter];
 		errno = pthread_create(&idWriters[i], NULL, writer, NULL);
 		test_errno("Blad tworzenia watkow pisarzy");
 	}
+
 
 }
 
@@ -87,6 +99,7 @@ pthread_t idWriters[writersCounter];
 		errno = pthread_join(idWriters[i], NULL);
 		test_errno("Blad konczenia watkow pisarzy");
 	}
+pthread_cond_destroy(&turn);	
 
 }
 
@@ -94,20 +107,37 @@ void *writer()
 {
 
 while ( 1 )
-  { 
+  {
 	waitForEntryWriter();
 	pthread_mutex_lock(&mutexReadersRoom);
+
+	writersQueque++;
+	consoleOutput();
+
+	while (inReaders || inWriters)
+	{
+	 pthread_cond_wait(&turn,&mutexReadersRoom);
+	}
+
 	inWriters++;
 	writersQueque--;
 	consoleOutput();
+	
+	pthread_mutex_unlock(&mutexReadersRoom);
+
 	inReadingRoom();
+
+	pthread_mutex_lock(&mutexReadersRoom);
+	
 	inWriters--;
 	writersQueque++;
 	consoleOutput();
-	pthread_mutex_unlock(&mutexReadersRoom);
- 
 
-  } 
+	pthread_cond_broadcast(&turn);
+	pthread_mutex_unlock(&mutexReadersRoom);
+
+
+  }
 }
 
 
@@ -116,24 +146,32 @@ void *reader()
 {
 
 while ( 1 )
-  { 
+  {
 	waitForEntryReader();
 	pthread_mutex_lock(&mutexReaders);
-	inReaders++;
+	
+	while (inWriters)
+	{
+	 pthread_cond_wait(&turn,&mutexReadersRoom);
+	}
+	
 	readersQueque--;
-	if (inReaders==1) pthread_mutex_lock(&mutexReadersRoom); //wchodzi pierwszy czytelnik, pisarz nie moze juz wejsc
-	pthread_mutex_unlock(&mutexReaders);
+	inReaders++;
 	consoleOutput();
+
+	pthread_mutex_unlock(&mutexReadersRoom);
 	inReadingRoom();
-	pthread_mutex_lock(&mutexReaders);
+
+	pthread_mutex_lock(&mutexReadersRoom);
 	inReaders--;
 	readersQueque++;
 	consoleOutput();
-	if (inReaders==0) pthread_mutex_unlock(&mutexReadersRoom);
-	pthread_mutex_unlock(&mutexReaders);
- 
 
-  } 
+	pthread_cond_broadcast(&turn);
+	pthread_mutex_unlock(&mutexReadersRoom);
+
+
+  }
 
 }
 
