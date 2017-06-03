@@ -25,6 +25,8 @@ void consoleOutput();
 
 void initThreads(int readersCounter,int writersCounter);
 
+void endThreads(int readersCounter,int writersCounter);
+
 void waitForEntryReader();
 
 void waitForEntryWriter();
@@ -48,10 +50,10 @@ initThreads(CUSTOM_READERS,CUSTOM_WRITERS);
 
 
 if (argc==3){
-initThreads(strtol(argv[1], NULL, 10),strtol(argv[2], NULL, 10));
+endThreads(strtol(argv[1], NULL, 10),strtol(argv[2], NULL, 10));
 }
 else{
-initThreads(CUSTOM_READERS,CUSTOM_WRITERS);
+endThreads(CUSTOM_READERS,CUSTOM_WRITERS);
 }
 printf("Koniec");
  return 0;
