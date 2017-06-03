@@ -138,18 +138,15 @@ while ( 1 )
 }
 
 void waitForEntryReader(){
-int i;
-for (i=0;i<30;i++){};
+sleep(1/20);
 }
 
 void waitForEntryWriter(){
-int i;
-for (i=0;i<10;i++){};
+sleep(1/80);
 }
 
 void inReadingRoom(){
-int i;
-for (i=0;i<100;i++){};
+sleep(1/50);
 }
 
 void consoleOutput(){
