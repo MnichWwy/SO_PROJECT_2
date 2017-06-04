@@ -22,8 +22,6 @@ extern int readersQueque,writersQueque,inReaders,inWriters;
 
 extern pthread_mutex_t mutexReadersRoom,mutexReaders;
 
-extern pthread_cond_t turn;
-
 void *writer();
 
 #endif //_WRITER_H

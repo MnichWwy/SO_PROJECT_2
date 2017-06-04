@@ -24,8 +24,6 @@ extern int readersQueque,writersQueque,inReaders,inWriters;
 
 extern pthread_mutex_t mutexReadersRoom,mutexReaders;
 
-extern pthread_cond_t turn;
-
 void initThreads(int readersCounter,int writersCounter);
 
 #endif // _INITTHREADS_H

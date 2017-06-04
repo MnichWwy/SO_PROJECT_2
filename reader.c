@@ -33,7 +33,6 @@ while ( 1 )
 	 pthread_mutex_unlock(&mutexReadersRoom);
 	}
 
-	//pthread_cond_broadcast(&turn);
 	pthread_mutex_unlock(&mutexReaders);
 
   }

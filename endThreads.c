@@ -16,7 +16,6 @@ pthread_t idWriters[writersCounter];
 		errno = pthread_join(idWriters[i], NULL);
 		test_errno("Blad konczenia watkow pisarzy");
 	}
-pthread_cond_destroy(&turn);
 pthread_mutex_destroy(&mutexReadersRoom);
 pthread_mutex_destroy(&mutexReaders);	
 

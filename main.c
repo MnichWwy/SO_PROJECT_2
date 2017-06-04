@@ -26,8 +26,6 @@ int readersQueque=0,writersQueque=0,inReaders=0,inWriters=0;
 
 pthread_mutex_t mutexReadersRoom,mutexReaders;
 
-pthread_cond_t turn;
-
 int main(int argc, char* argv[])
 {
 
